@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Truco Brasileiro - Truco Paulista</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Topo: Título e Botões de Controle Rápido -->
+  <header class="game-header">
+    <div class="brand">
+      <span class="brand-title">TRUCO BRASILEIRO</span>
+      <span class="brand-badge">Paulista</span>
+    </div>
+    <div class="header-actions">
+      <button id="btn-sound-toggle" class="btn-icon" title="Alternar Som">
+        <span id="sound-icon">🔊</span> Som
+      </button>
+      <button id="btn-rules" class="btn-icon" title="Regras e Força das Cartas">
+        📖 Regras
+      </button>
+      <button id="btn-new-game" class="btn-icon" title="Reiniciar Partida">
+        🔄 Novo Jogo
+      </button>
+    </div>
+  </header>
+
+  <!-- Placar Principal e Marcador de Vazas -->
+  <section class="scoreboard-container">
+    <!-- Time NÓS -->
+    <div class="score-box we">
+      <div class="score-number" id="score-we">0</div>
+      <div>
+        <div class="score-label">NÓS</div>
+        <div class="score-sub">Você & Chicó</div>
+      </div>
+    </div>
+
+    <!-- Status da Mão Atual -->
+    <div class="hand-status-panel">
+      <div class="bet-badge" id="bet-badge">Valendo 1 ponto</div>
+      <div class="tricks-track" id="tricks-track" title="Indicadores das 3 vazas da mão">
+        <div class="trick-dot" id="trick-dot-1" title="1ª Vaza"></div>
+        <div class="trick-dot" id="trick-dot-2" title="2ª Vaza"></div>
+        <div class="trick-dot" id="trick-dot-3" title="3ª Vaza"></div>
+      </div>
+    </div>
+
+    <!-- Time ELES -->
+    <div class="score-box they">
+      <div style="text-align: right;">
+        <div class="score-label">ELES</div>
+        <div class="score-sub">Tonho & Tião</div>
+      </div>
+      <div class="score-number" id="score-they">0</div>
+    </div>
+  </section>
+
+  <!-- Mesa de Truco -->
+  <main class="table-viewport">
+    <div class="truco-table" id="truco-table">
+      
+      <!-- Informação da Manilha da Rodada -->
+      <div class="manilha-info-banner" id="manilha-info-banner">
+        <span>Vira: <strong id="vira-info-name">Carregando...</strong></span>
+        <span>|</span>
+        <span>Manilha: <strong id="manilha-info-name">...</strong> (♣ Zap > ♥ Copeta > ♠ Espadilha > ♦ Pica-fumo)</span>
+      </div>
+
+      <!-- Jogador Superior: Chicó (Parceiro - Nós) -->
+      <div class="player-slot top team-we" id="player-slot-2">
+        <div class="player-badge">
+          <div class="player-avatar">C</div>
+          <span class="player-name">Chicó</span>
+          <span class="player-tag">Parceiro</span>
+        </div>
+        <div class="hand-container" id="hand-player-2"></div>
+      </div>
+
+      <!-- Jogador Esquerdo: Tonho (Adversário 1 - Eles) -->
+      <div class="player-slot left team-they" id="player-slot-1">
+        <div class="player-badge">
+          <div class="player-avatar">T</div>
+          <span class="player-name">Tonho</span>
+          <span class="player-tag">Eles</span>
+        </div>
+        <div class="hand-container" id="hand-player-1"></div>
+      </div>
+
+      <!-- Centro da Mesa: Monte, Vira e Cartas Jogadas -->
+      <div class="table-center">
+        <!-- Deck e Vira -->
+        <div class="deck-and-vira-container">
+          <div class="deck-pile" id="deck-pile">
+            <div class="truco-card face-down deck-pile-card mini">
+              <div class="card-back-pattern"><div class="inner-diamond"></div></div>
+            </div>
+            <div class="truco-card face-down deck-pile-card mini">
+              <div class="card-back-pattern"><div class="inner-diamond"></div></div>
+            </div>
+            <div class="truco-card face-down deck-pile-card mini">
+              <div class="card-back-pattern"><div class="inner-diamond"></div></div>
+            </div>
+          </div>
+          <div class="vira-label">VIRA</div>
+          <div class="vira-card-wrapper" id="vira-card-wrapper"></div>
+        </div>
+
+        <!-- Cartas Jogadas na Vaza Atual -->
+        <div class="played-cards-arena" id="played-cards-arena">
+          <div class="played-spot from-bottom" id="played-spot-0"></div>
+          <div class="played-spot from-left" id="played-spot-1"></div>
+          <div class="played-spot from-top" id="played-spot-2"></div>
+          <div class="played-spot from-right" id="played-spot-3"></div>
+        </div>
+      </div>
+
+      <!-- Jogador Direito: Tião (Adversário 2 - Eles) -->
+      <div class="player-slot right team-they" id="player-slot-3">
+        <div class="hand-container" id="hand-player-3"></div>
+        <div class="player-badge">
+          <div class="player-avatar">T</div>
+          <span class="player-name">Tião</span>
+          <span class="player-tag">Eles</span>
+        </div>
+      </div>
+
+      <!-- Jogador Inferior: Você (Nós) -->
+      <div class="player-slot bottom team-we" id="player-slot-0">
+        <div class="hand-container" id="hand-player-0"></div>
+        <div class="player-badge" style="margin-top: 6px;">
+          <div class="player-avatar">V</div>
+          <span class="player-name">Você</span>
+          <span class="player-tag">Nós</span>
+        </div>
+      </div>
+
+      <!-- Container para Balões de Grito/Fala de Truco -->
+      <div id="speech-bubbles-container"></div>
+    </div>
+  </main>
+
+  <!-- Painel Inferior de Controles do Usuário -->
+  <footer class="player-controls-panel">
+    <div class="controls-left">
+      <button id="btn-covered-card" class="covered-card-toggle" title="Jogar a próxima carta virada para baixo (carta encoberta)">
+        <span>🃏</span> Carta Coberta: <strong>NÃO</strong>
+      </button>
+    </div>
+
+    <div class="controls-center">
+      <button id="btn-call-truco" class="btn-truco-action btn-truco-call">
+        ⚡ PEDIR TRUCO! (3)
+      </button>
+    </div>
+
+    <div class="game-feed" id="game-feed">
+      Carregando partida...
+    </div>
+  </footer>
+
+  <!-- MODAL: Desafio de Truco (Quando o adversário grita Truco / 6 / 9 / 12) -->
+  <div class="modal-overlay" id="modal-truco-challenge">
+    <div class="modal-card">
+      <div class="modal-title" id="truco-challenge-title">TRUUUCO!</div>
+      <div class="modal-desc" id="truco-challenge-desc">
+        Os adversários pediram Truco! O que você deseja fazer?
+      </div>
+      <div class="modal-actions">
+        <button id="btn-truco-accept" class="btn-modal btn-accept">
+          ✓ Aceitar
+        </button>
+        <button id="btn-truco-run" class="btn-modal btn-run">
+          ✗ Correr
+        </button>
+        <button id="btn-truco-raise" class="btn-modal btn-raise">
+          ⚡ Pedir Seis!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Mão de 11 (Quando a equipe atinge 11 pontos) -->
+  <div class="modal-overlay" id="modal-mao-11">
+    <div class="modal-card">
+      <div class="modal-title">🃏 MÃO DE 11!</div>
+      <div class="modal-desc" id="mao-11-desc">
+        Seu time atingiu 11 pontos! Analise as cartas da sua mão e do seu parceiro Chicó:
+      </div>
+      <div id="partner-hand-preview" style="display:flex; justify-content:center; gap:8px; margin: 8px 0;"></div>
+      <div class="modal-actions">
+        <button id="btn-mao-11-play" class="btn-modal btn-accept">
+          Jogar a Mão (Vale 3 pts)
+        </button>
+        <button id="btn-mao-11-run" class="btn-modal btn-run">
+          Correr (Entrega 1 pt)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Fim de Partida (Vitória / Derrota) -->
+  <div class="modal-overlay" id="modal-game-over">
+    <div class="modal-card">
+      <div class="modal-title" id="game-over-title">FIM DE JOGO!</div>
+      <div class="modal-desc" id="game-over-desc">
+        A equipe NÓS venceu a partida de 12 pontos!
+      </div>
+      <div class="modal-actions">
+        <button id="btn-restart-game" class="btn-modal btn-accept">
+          🔄 Jogar Outra Partida
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Regras do Truco Paulista -->
+  <div class="modal-overlay" id="modal-rules">
+    <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-title">📖 Regras do Truco Paulista</div>
+      <div class="rules-content">
+        <h3>🎯 Objetivo</h3>
+        <p>A primeira dupla a acumular <strong>12 pontos</strong> vence a partida.</p>
+
+        <h3>🎴 Como funciona cada Mão</h3>
+        <ul>
+          <li>Cada jogador recebe 3 cartas e uma carta é virada na mesa (o <strong>Vira</strong>).</li>
+          <li>A mão é disputada em até 3 vazas (rodadas). A dupla que vencer 2 vazas leva os pontos da mão.</li>
+          <li>Em caso de empate na 1ª vaza (canga), quem fizer a 2ª vence a mão.</li>
+        </ul>
+
+        <h3>👑 Manilhas (As cartas mais fortes)</h3>
+        <p>A manilha é a carta imediatamente seguinte ao Vira (Ex: se o Vira for 7, a Manilha é a Dama Q). A sequência é:</p>
+        <p style="font-weight: bold; color: #fbbf24; margin: 4px 0;">4 ➔ 5 ➔ 6 ➔ 7 ➔ Q ➔ J ➔ K ➔ A ➔ 2 ➔ 3 ➔ 4</p>
+        <p>Entre as 4 manilhas, a força é definida pelo naipe (do maior para o menor):</p>
+        <ul>
+          <li>♣ <strong>Paus (Zap / Gato)</strong> - A maior carta do jogo</li>
+          <li>♥ <strong>Copas (Copeta)</strong> - Segunda maior</li>
+          <li>♠ <strong>Espadas (Espadilha)</strong> - Terceira maior</li>
+          <li>♦ <strong>Ouros (Pica-fumo)</strong> - Quarta maior</li>
+        </ul>
+
+        <h3>🃏 Força das Cartas Comuns</h3>
+        <p>Quando não são manilhas, a força obedece à ordem (da mais fraca para a mais forte):</p>
+        <p>4 &lt; 5 &lt; 6 &lt; 7 &lt; Q &lt; J &lt; K &lt; A &lt; 2 &lt; 3</p>
+
+        <h3>⚡ Aumentos (Truco!)</h3>
+        <ul>
+          <li>A mão começa valendo <strong>1 ponto</strong>.</li>
+          <li><strong>Truco!</strong> eleva para <strong>3 pontos</strong> (se o adversário correr, dá 1 ponto).</li>
+          <li><strong>Seis!</strong> eleva para <strong>6 pontos</strong> (se correr, dá 3 pontos).</li>
+          <li><strong>Nove!</strong> eleva para <strong>9 pontos</strong> (se correr, dá 6 pontos).</li>
+          <li><strong>Doze!</strong> eleva para <strong>12 pontos</strong> (se correr, dá 9 pontos).</li>
+        </ul>
+
+        <h3>🛡️ Mão de 11</h3>
+        <p>Quando uma dupla chega a 11 pontos, não se pode gritar Truco. A dupla vê as cartas entre si e decide se joga (valendo 3) ou corre (entregando 1 ponto ao adversário).</p>
+      </div>
+      <div class="modal-actions">
+        <button id="btn-close-rules" class="btn-modal btn-accept">Entendi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
